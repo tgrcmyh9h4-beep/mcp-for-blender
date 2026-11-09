@@ -19,6 +19,7 @@ Options (after the "--"):
     --engine NAME      BLENDER_EEVEE (default) or CYCLES
     --no-volume        skip the volumetric cloud slab (mesh clouds only)
     --save-blend PATH  save the generated scene
+    --placeholder      with --animation: let several Blender instances share one frame range
 
 Scale note: distances are compressed so the whole trip fits in one scene.  The street,
 tower and clouds are true scale; the "Earth" is a 40 km ball, the Moon orbits ~100 km
@@ -1003,6 +1004,8 @@ def parse_args():
     p.add_argument("--engine", default="BLENDER_EEVEE")
     p.add_argument("--no-volume", action="store_true")
     p.add_argument("--save-blend", default="")
+    p.add_argument("--placeholder", action="store_true",
+                   help="claim each frame with a placeholder file so several instances can share a range")
     return p.parse_args(argv)
 
 
@@ -1028,6 +1031,7 @@ def main():
         os.makedirs(os.path.join(args.out, "frames"), exist_ok=True)
         scene.frame_start, scene.frame_end = args.start, args.end
         scene.render.filepath = os.path.join(args.out, "frames", "f_")
+        scene.render.use_placeholder = args.placeholder
         bpy.ops.render.render(animation=True)
 
 
